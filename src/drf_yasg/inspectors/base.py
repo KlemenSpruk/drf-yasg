@@ -273,6 +273,8 @@ class FieldInspector(BaseInspector):
         title = force_real_str(field.label) if field.label else None
         title = title if swagger_object_type == openapi.Schema else None  # only Schema has title
         help_text = getattr(field, 'help_text', None)
+        if isinstance(help_text, dict):
+            help_text = help_text.get('doc', None)
         description = force_real_str(help_text) if help_text else None
         description = description if swagger_object_type != openapi.Items else None  # Items has no description either
 

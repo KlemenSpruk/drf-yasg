@@ -448,15 +448,21 @@ def field_value_to_representation(field, value):
     :param object value: value
     :return: the converted value
     """
-    value = field.to_representation(value)
-    if isinstance(value, Decimal):
-        if decimal_as_float(field):
-            value = float(value)
+    if isinstance(field, ChoiceField):
+        if value in ('', None):
+            pass
         else:
-            value = str(value)
+            value = "{} : {}".format(value, field.choices[value])
+    else:
+        value = field.to_representation(value)
+        if isinstance(value, Decimal):
+            if decimal_as_float(field):
+                value = float(value)
+            else:
+                value = str(value)
 
-    # JSON roundtrip ensures that the value is valid JSON;
-    # for example, sets and tuples get transformed into lists
+        # JSON roundtrip ensures that the value is valid JSON;
+        # for example, sets and tuples get transformed into lists
     return json.loads(json.dumps(value, cls=encoders.JSONEncoder))
 
 
